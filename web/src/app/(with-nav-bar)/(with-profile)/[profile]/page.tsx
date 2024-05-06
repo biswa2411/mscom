@@ -86,7 +86,7 @@ const Profile = () => {
               placeholder="Enter First Name"
               value={formData.firstName}
               onChange={handleInputChange}
-              className="border border-black pl-2 rounded-[4px]"
+              className="border border-black pl-2 rounded-[4px] py-2"
             />
           </div>
           <div className="flex flex-col py-1  md:w-[50%]">
@@ -99,7 +99,7 @@ const Profile = () => {
               placeholder="Enter Last Name"
               value={formData.lastName}
               onChange={handleInputChange}
-              className="border border-black pl-2 rounded-[4px]"
+              className="border border-black pl-2 rounded-[4px] py-2"
             />
           </div>
         </div>
@@ -114,7 +114,7 @@ const Profile = () => {
               placeholder="Enter Email"
               value={formData.email}
               onChange={handleInputChange}
-              className="border border-black pl-2 rounded-[4px]"
+              className="border border-black pl-2 rounded-[4px] py-2"
             />
           </div>
           <div className="flex flex-col md:w-[50%] py-1">
@@ -127,7 +127,7 @@ const Profile = () => {
               value={formData.phone}
               placeholder="Enter Phone No"
               onChange={handleInputChange}
-              className="border border-black pl-2 rounded-[4px]"
+              className="border border-black pl-2 rounded-[4px] py-2"
             />
           </div>
         </div>
@@ -168,7 +168,7 @@ const Profile = () => {
               placeholder="Enter First Name"
               value={formData.billingFirstName}
               onChange={handleInputChange}
-              className="border border-black pl-2 rounded-[4px]"
+              className="border border-black pl-2 rounded-[4px] py-2"
             />
           </div>
           <div className="flex flex-col py-1  md:w-[50%]">
@@ -181,7 +181,7 @@ const Profile = () => {
               placeholder="Enter Last Name"
               value={formData.billingLastName}
               onChange={handleInputChange}
-              className="border border-black pl-2 rounded-[4px]"
+              className="border border-black pl-2 rounded-[4px] py-2"
             />
           </div>
         </div>
@@ -196,7 +196,7 @@ const Profile = () => {
               placeholder="Enter Email"
               value={formData.billingEmail}
               onChange={handleInputChange}
-              className="border border-black pl-2 rounded-[4px]"
+              className="border border-black pl-2 rounded-[4px] py-2"
             />
           </div>
           <div className="flex flex-col md:w-[50%] py-1">
@@ -209,7 +209,7 @@ const Profile = () => {
               value={formData.billingPhone}
               placeholder="Enter Phone No"
               onChange={handleInputChange}
-              className="border border-black pl-2 rounded-[4px]"
+              className="border border-black pl-2 rounded-[4px] py-2"
             />
           </div>
         </div>
@@ -223,7 +223,7 @@ const Profile = () => {
               value={formData.companyName}
               placeholder="Enter Company Name"
               onChange={handleInputChange}
-              className="border border-black  pl-2 rounded-[4px]"
+              className="border border-black  pl-2 rounded-[4px] py-2"
             />
           </div>
           <div className="flex flex-col py-1 mr-[20%]">
@@ -236,7 +236,7 @@ const Profile = () => {
               value={formData.address}
               placeholder="Enter Address"
               onChange={handleInputChange}
-              className="border border-black pl-2 rounded-[4px]"
+              className="border border-black pl-2 rounded-[4px] py-2"
             />
           </div>
           <div className="flex flex-col md:flex-row  mr-[20%] md:mr-[11%]">
@@ -250,7 +250,7 @@ const Profile = () => {
                 value={formData.city}
                 placeholder="Enter Town/City"
                 onChange={handleInputChange}
-                className="border border-black pl-2 rounded-[4px] md:w-[70%]"
+                className="border border-black pl-2 rounded-[4px] md:w-[70%] py-2"
               />
             </div>
             <div className="flex flex-col py-1">
@@ -263,7 +263,7 @@ const Profile = () => {
                 value={formData.state}
                 placeholder="Enter State"
                 onChange={handleInputChange}
-                className="border border-black pl-2 rounded-[4px]  md:w-[70%]"
+                className="border border-black pl-2 rounded-[4px]  md:w-[70%] py-2"
               />
             </div>
             <div className="flex flex-col py-1">
@@ -276,7 +276,7 @@ const Profile = () => {
                 value={formData.pin}
                 placeholder="Enter PIN Code"
                 onChange={handleInputChange}
-                className="border border-black pl-2 rounded-[4px]  md:w-[70%]"
+                className="border border-black pl-2 rounded-[4px]  md:w-[70%] py-2"
               />
             </div>
           </div>
