@@ -3,7 +3,7 @@
 import MenuIcon from "@mui/icons-material/Menu";
 import { Person, Search, ShoppingCart } from "@mui/icons-material";
 import Image from "next/image";
-import IconButton from "@lib/button/IconButton";
+// import IconButton from "@lib/button/IconButton";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -48,14 +48,14 @@ export const Header = () => {
         ))}
       </div>
       <div className="hidden md:flex gap-5">
-        <IconButton icon={Search} />
+        {/* <IconButton icon={Search} />
         <IconButton icon={ShoppingCart} onClick={()=>router.push("/cart")}/>
         <IconButton
           icon={Person}
           onClick={() => {
             router.push(`/${user}`);
           }}
-        />
+        /> */}
       </div>
     </nav>
   );
