@@ -10,7 +10,9 @@ class User(AbstractUser):
     # For example:
     # phone_number = models.CharField(max_length=15, blank=True)
     # birth_date = models.DateField(null=True, blank=True)
+    email =models.EmailField(blank=False, max_length=255, verbose_name="email")
     role = models.CharField(max_length=100)  # Example field for user role
+    
 
     def __str__(self):
         return self.username
