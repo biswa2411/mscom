@@ -49,14 +49,14 @@ export const Header = () => {
         ))}
       </div>
       <div className="hidden md:flex gap-5">
-        <IconButton icon={Search} />
+        {/* <IconButton icon={Search} />
         <IconButton icon={ShoppingCart} onClick={()=>router.push("/cart")}/>
         <IconButton
           icon={Person}
           onClick={() => {
             router.push(`/${user}`);
           }}
-        />
+        /> */}
       </div>
     </nav>
   );
