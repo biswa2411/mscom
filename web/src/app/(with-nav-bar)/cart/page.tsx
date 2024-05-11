@@ -60,9 +60,7 @@ const Cart = () => {
   };
 
   return (
-    //   <section className='h-screen w-screen'>
-    //   <div className='shadow-custom h-10 p-10 m-10 mt-96'>Cart</div>
-    // </section>
+
     <div className="relative">
       <div className="absolute top-16 right-10 font-medium text-[16px] text-[#000000]">
         <h5 className="font-bold text-[24px]">Summary</h5>
@@ -99,7 +97,7 @@ const Cart = () => {
       <div className="bg-white px-[5%] py-[3%]">
         {customizeMemory?.map((item, index) => (
           <div key={index}>
-            <div className="grid grid-cols-1 md:grid-cols-3 mr-[30%] my-[3%] bg-gray-200 rounded-lg">
+            <div className="grid grid-cols-1 md:grid-cols-3 mr-[30%] my-[3%] bg-white shadow-custom rounded-lg">
               <div className="flex justify-center items-center">
               <Image
                 src={item?.image}

@@ -47,8 +47,8 @@ INSTALLED_APPS = [
     'payment',
     'promotion',
     'graphQL',
-    "graphene_django"
-    
+    "graphene_django",
+    "graphql_jwt.refresh_token.apps.RefreshTokenConfig"
 ]
 
 MIDDLEWARE = [
@@ -59,6 +59,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.contrib.auth.middleware.AuthenticationMiddleware"
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -101,10 +102,17 @@ DATABASES = {
 
 GRAPHENE = {
     "SCHEMA": "graphQL.schema.schema",
-    # "MIDDLEWARE": [
-    #     "graphql_jwt.middleware.JSONWebTokenMiddleware",
-    # ],
+    "MIDDLEWARE": [
+        "graphql_jwt.middleware.JSONWebTokenMiddleware",
+    ],
 }
+
+
+AUTHENTICATION_BACKENDS = [
+    "graphql_jwt.backends.JSONWebTokenBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
+
 
 
 
