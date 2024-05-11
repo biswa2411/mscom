@@ -10,7 +10,7 @@ export default function NavigationLayout({
 
   return (
     <section className="'h-screen w-screen flex flex-row">
-      <div className="w-[30vw] bg-red-400s ">
+      <div className="w-[30vw] bg-gray-100 ">
         <div className=" flex flex-col gap-5 justify-center items-center py-[10%]">
           <div className="relative">
             <Image
@@ -38,7 +38,7 @@ export default function NavigationLayout({
           <ul>
             <li className="mb-2 ">
               <a
-                href="/order"
+                href="/profile"
                 className="hover:text-[#0E2920] font-semibold text-[20px] text-gray-300 flex gap-3"
               >
                 <Image
@@ -53,7 +53,7 @@ export default function NavigationLayout({
             </li>
             <li className="mb-2 ">
               <a
-                href="/profile"
+                href="/order"
                 className="hover:text-[#0E2920] font-semibold text-[20px] text-gray-300 flex gap-3"
               >
                 <Image
@@ -68,7 +68,7 @@ export default function NavigationLayout({
             </li>
             <li className="mb-2 ">
               <a
-                href="#"
+                href="support"
                 className="hover:text-[#0E2920] font-semibold text-[20px] text-gray-300 flex gap-3"
               >
                 <Image

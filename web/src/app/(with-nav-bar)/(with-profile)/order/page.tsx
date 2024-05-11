@@ -129,7 +129,7 @@ const Order = () => {
   }, [page, rows]);
 
   return (
-    <div className="py-[10%] px-[5%] bg-white">
+    <div className="py-[5%] px-[5%] bg-white">
       <div className="text-[#0E2920] font-bold text-[32px]">Order History</div>
       <Table
         aria-label="client side pagination"

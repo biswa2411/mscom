@@ -53,9 +53,9 @@ const Profile = () => {
   return (
     <div className="bg-white h-full w-full">
       {/* <BillingAddrs /> */}
-      <div className="px-10 md:px-20 lg:px-32 py-10">
+      <div className="px-[5%] py-[5%]">
         <div className="flex justify-between">
-          <h2 className="text-[#0E2920] font-bold">Personal Information</h2>
+          <h2 className="text-[16px] md:text-[22px] lg:text-[32px] text-[#0E2920] font-bold">Personal Information</h2>
           <div className="flex justify-center items-center gap-1 py-1 px-2 rounded-[4px] border-[1px] cursor cursor-pointer border-[#0E2920]">
             <svg
               width="14"
@@ -134,7 +134,7 @@ const Profile = () => {
       </div>
 
       {/* Billing Address  */}
-      <div className="px-10 md:px-20 lg:px-32 py-10">
+      <div className="px-[5%] py-[5%]">
         <div className="flex justify-between">
           <h2 className="text-[#0E2920] font-bold">Billing Address</h2>
           <div className="flex justify-center items-center gap-1 py-1 px-2 rounded-[4px] border-[1px] cursor cursor-pointer border-[#0E2920]">
