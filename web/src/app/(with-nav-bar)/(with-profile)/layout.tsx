@@ -1,5 +1,6 @@
 import { Footer, Header } from "@components/layout";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function NavigationLayout({
   children, // will be a page or nested layout
@@ -8,10 +9,12 @@ export default function NavigationLayout({
 }) {
   const menuId = "primary-search-account-menu";
 
+  const profile_sidebar = [{ icon: "/profileIcon.svg", link: "/profile", Title: "Profile" }, { icon: "/ordersIcon.svg", link: "/order", Title: "Orders" }, { icon: "/helpIcon.svg", link: "/support", Title: "Help & Support" }]
+
   return (
     <section className="'h-screen w-screen flex flex-row">
-      <div className="w-[30vw] bg-gray-100 ">
-        <div className=" flex flex-col gap-5 justify-center items-center py-[10%]">
+      <div className="w-[30vw] flex items-start justify-center">
+        <div className=" flex flex-col gap-5 justify-center items-center py-[10%] bg-white w-4/5 m-10  shadow-custom rounded-xl">
           <div className="relative">
             <Image
               src={
@@ -32,59 +35,30 @@ export default function NavigationLayout({
               />
             </button>
           </div>
-          <div className="text-[#0E2920] font-bold text-[16px] md:text-[24px]">
+          <div className="text-primary font-bold text-[16px] md:text-[24px]">
             John Perry
           </div>
-          <ul>
-            <li className="mb-2 ">
-              <a
-                href="/profile"
-                className="hover:text-[#0E2920] font-semibold text-[20px] text-gray-300 flex gap-3"
-              >
-                <Image
-                  src="/profileIcon.svg"
-                  alt="profile image"
-                  height={30}
-                  width={30}
-                  className="flex justify-center items-center"
-                />
-                Profile
-              </a>
-            </li>
-            <li className="mb-2 ">
-              <a
-                href="/order"
-                className="hover:text-[#0E2920] font-semibold text-[20px] text-gray-300 flex gap-3"
-              >
-                <Image
-                  src="/ordersIcon.svg"
-                  alt="profile image"
-                  height={30}
-                  width={30}
-                  className="flex justify-center items-center"
-                />
-                Orders
-              </a>
-            </li>
-            <li className="mb-2 ">
-              <a
-                href="support"
-                className="hover:text-[#0E2920] font-semibold text-[20px] text-gray-300 flex gap-3"
-              >
-                <Image
-                  src="/helpIcon.svg"
-                  alt="profile image"
-                  height={30}
-                  width={30}
-                  className="flex justify-center items-center"
-                />
-                Help & Support
-              </a>
-            </li>
-            <li className="mb-2">
-              <a
-                href="#"
-                className="hover:text-[#0E2920] font-semibold text-[20px] text-gray-300 flex gap-3"
+          <ul className="w-full">
+            {profile_sidebar.map(({ link, icon, Title }, key) => (
+              <li key={key} className="mb-5 w-full px-5 py-2 hover:border-l-4 border-primary">
+                <Link
+                  href={link}
+                  className="hover:text-primary font-semibold text-[20px] text-gray-300 flex gap-3 "
+                >
+                  <Image
+                    src={icon}
+                    alt="profile image"
+                    height={30}
+                    width={30}
+                    className="flex justify-center items-center"
+                  />
+                  {Title}                </Link>
+              </li>
+            ))}
+            <li className="mb-5 w-full px-5 py-2 hover:border-l-4 border-primary hover:cursor-pointerx">
+              <div
+
+                className="hover:text-primary font-semibold text-[20px] text-gray-300 flex gap-3 "
               >
                 <Image
                   src="/signOutIcon.svg"
@@ -94,7 +68,7 @@ export default function NavigationLayout({
                   className="flex justify-center items-center"
                 />
                 Log Out
-              </a>
+              </div>
             </li>
           </ul>
         </div>
