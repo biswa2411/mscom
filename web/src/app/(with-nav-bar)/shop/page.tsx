@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import React, { useState } from "react";
 
 const Shop = () => {
@@ -9,16 +10,19 @@ const Shop = () => {
       img: "https://img.freepik.com/free-vector/bird-colorful-logo-gradient-vector_343694-1365.jpg?size=338&ext=jpg&ga=GA1.1.553209589.1714780800&semt=sph",
       paintingType: "Digital Painting",
       price: "600",
+      id: "1",
     },
     {
       img: "https://img.freepik.com/free-vector/bird-colorful-logo-gradient-vector_343694-1365.jpg?size=338&ext=jpg&ga=GA1.1.553209589.1714780800&semt=sph",
       paintingType: "Acrylic Painting",
       price: "1000",
+      id: "2",
     },
     {
       img: "https://img.freepik.com/free-vector/bird-colorful-logo-gradient-vector_343694-1365.jpg?size=338&ext=jpg&ga=GA1.1.553209589.1714780800&semt=sph",
       paintingType: "Sketch Art",
       price: "1200",
+      id: "3",
     },
   ];
 
@@ -28,6 +32,7 @@ const Shop = () => {
         {shoppingItems.map((items, index) => (
           <div key={index} className="border hover:border-[#0E2920] rounded-lg">
             <div className="">
+            <Link href={`/productInfo`}>
               <Image
                 src={items.img}
                 alt="profile image"
@@ -44,6 +49,7 @@ const Shop = () => {
                   <p>{items.price}</p>
                 </button>
               </div>
+              </Link>
             </div>
           </div>
         ))}
