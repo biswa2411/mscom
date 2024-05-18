@@ -61,42 +61,10 @@ const Cart = () => {
 
   return (
 
-    <div className="relative">
-      <div className="absolute top-16 right-10 font-medium text-[16px] text-[#000000]">
-        <h5 className="font-bold text-[24px]">Summary</h5>
-        <div className="flex justify-between">
-          <div>Subtotal</div>
-          <div>{"2,323"}</div>
-        </div>
-        <div className="flex justify-between py-2">
-          <div>Shipping</div>
-          <div>{"free"}</div>
-        </div>
-        <div className="flex justify-between py-2">
-          <div>Coupon</div>
-          <div>{"NA"}</div>
-        </div>
-        <hr className="py-1"></hr>
-        <div className="flex justify-between py-2 font-bold">
-          <div>Total</div>
-          <div>{"65,565"}</div>
-        </div>
-        <button className="justify-center items-center w-full bg-[#B88E2F] hover:bg-[#917b47] py-3 font-bold px-5 rounded-full text-white">Pay Now</button>
-        <div className="pt-10">
-          <input
-            type="text"
-            name="coupon"
-            placeholder="Enter Coupon"
-            // value={formData.firstName}
-            // onChange={handleInputChange}
-            className="border border-black pl-2 py-3 px-5 rounded-full mr-2"
-          />
-          <button className=" bg-[#B88E2F] hover:bg-[#917b47] font-bold py-3 px-5 rounded-full text-white">Apply</button>
-        </div>
-      </div>
-      <div className="bg-white px-[5%] py-[3%]">
+    <div className="flex px-[5%] py-[3%]">
+      <div className="w-[70%] bg-white">
         {customizeMemory?.map((item, index) => (
-          <div key={index}>
+          <div key={index} className="">
             <div className="grid grid-cols-1 md:grid-cols-3 mr-[30%] my-[3%] bg-white shadow-custom rounded-lg">
               <div className="flex justify-center items-center">
               <Image
@@ -169,6 +137,38 @@ const Cart = () => {
             </div>
           </div>
         ))}
+      </div>
+      <div className="w-[30%] font-medium text-[16px] text-[#000000]">
+        <h5 className="font-bold text-[24px]">Summary</h5>
+        <div className="flex justify-between">
+          <div>Subtotal</div>
+          <div>{"2,323"}</div>
+        </div>
+        <div className="flex justify-between py-2">
+          <div>Shipping</div>
+          <div>{"free"}</div>
+        </div>
+        <div className="flex justify-between py-2">
+          <div>Coupon</div>
+          <div>{"NA"}</div>
+        </div>
+        <hr className="py-1"></hr>
+        <div className="flex justify-between py-2 font-bold">
+          <div>Total</div>
+          <div>{"65,565"}</div>
+        </div>
+        <button className="justify-center items-center w-full bg-[#B88E2F] hover:bg-[#917b47] py-3 font-bold px-5 rounded-full text-white">Pay Now</button>
+        <div className="flex pt-10">
+          <input
+            type="text"
+            name="coupon"
+            placeholder="Enter Coupon"
+            // value={formData.firstName}
+            // onChange={handleInputChange}
+            className="border border-black pl-2 py-3 px-5 rounded-full mr-2"
+          />
+          <button className=" bg-[#B88E2F] hover:bg-[#917b47] font-bold py-3 px-5 rounded-full text-white">Apply</button>
+        </div>
       </div>
     </div>
   );

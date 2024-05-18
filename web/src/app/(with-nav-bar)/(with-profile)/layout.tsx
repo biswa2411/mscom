@@ -9,7 +9,11 @@ export default function NavigationLayout({
 }) {
   const menuId = "primary-search-account-menu";
 
-  const profile_sidebar = [{ icon: "/profileIcon.svg", link: "/profile", Title: "Profile" }, { icon: "/ordersIcon.svg", link: "/order", Title: "Orders" }, { icon: "/helpIcon.svg", link: "/support", Title: "Help & Support" }]
+  const profile_sidebar = [
+    { icon: "/profileIcon.svg", link: "/profile", Title: "Profile" },
+    { icon: "/ordersIcon.svg", link: "/order", Title: "Orders" },
+    { icon: "/helpIcon.svg", link: "/support", Title: "Help & Support" },
+  ];
 
   return (
     <section className="'h-screen w-screen flex flex-row">
@@ -40,7 +44,10 @@ export default function NavigationLayout({
           </div>
           <ul className="w-full">
             {profile_sidebar.map(({ link, icon, Title }, key) => (
-              <li key={key} className="mb-5 w-full px-5 py-2 hover:border-l-4 border-primary">
+              <li
+                key={key}
+                className="mb-5 w-full px-5 py-2 hover:border-l-4 border-primary"
+              >
                 <Link
                   href={link}
                   className="hover:text-primary font-semibold text-[20px] text-gray-300 flex gap-3 "
@@ -51,15 +58,13 @@ export default function NavigationLayout({
                     height={30}
                     width={30}
                     className="flex justify-center items-center"
-                  />
-                  {Title}                </Link>
+                  />  
+                  {Title}{" "}
+                </Link>
               </li>
             ))}
-            <li className="mb-5 w-full px-5 py-2 hover:border-l-4 border-primary hover:cursor-pointerx">
-              <div
-
-                className="hover:text-primary font-semibold text-[20px] text-gray-300 flex gap-3 "
-              >
+            <li className="mb-5 w-full px-5 py-2 hover:border-l-4 border-primary hover:cursor-pointer">
+              <div className="hover:text-primary font-semibold text-[20px] text-gray-300 flex gap-3 ">
                 <Image
                   src="/signOutIcon.svg"
                   alt="profile image"
