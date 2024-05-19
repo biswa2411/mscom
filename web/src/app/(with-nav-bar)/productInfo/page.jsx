@@ -266,10 +266,10 @@ const Shop = () => {
               <div>
                 {additionalInfo.map((info, index) => (
                   <div
-                    className="flex bg-[#F0F0F0] gap-10 py-2 border border-b-gray-300 px-4"
+                    className="flex bg-[#F0F0F0] gap-1 py-2 border border-b-gray-300 px-4"
                     key={index}
                   >
-                    <p>
+                    <p className="font-semibold">
                       {info.label}
                       {":"}
                     </p>
