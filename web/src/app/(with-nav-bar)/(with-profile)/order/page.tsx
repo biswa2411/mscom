@@ -1,6 +1,5 @@
 "use client";
 
-import { Footer, Header } from "@components/layout";
 import React, { useState, useMemo } from "react";
 import {
   Table,
@@ -10,7 +9,6 @@ import {
   TableRow,
   TableCell,
   Pagination,
-  getKeyValue,
 } from "@nextui-org/react";
 
 const Order = () => {
@@ -143,7 +141,7 @@ const Order = () => {
               page={page}
               total={pages}
               onChange={(page) => setPage(page)}
-              className=""
+              className="overflow-hidden"
             />
           </div>
         }
