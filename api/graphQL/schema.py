@@ -1,6 +1,10 @@
 import graphene
 
-class Query(graphene.ObjectType):
-    hello = graphene.String(default_value="Hi!")
+class SuperQuery(graphene.ObjectType):
+    ABC = graphene.String(default_value="sasasas!")
+    
+class SuperMutations(graphene.ObjectType):
+    ABC = graphene.String(default_value="sasasas!") 
+    
 
-schema = graphene.Schema(query=Query)
+schema = graphene.Schema(query=SuperMutations, mutation=SuperMutations)

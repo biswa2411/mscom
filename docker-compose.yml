@@ -34,13 +34,6 @@ services:
       - pgadmin-data:/var/lib/pgadmin
     depends_on:
       - db
-  web:
-    build: ./web
-    restart: unless-stopped
-    ports:
-      - 3002:3000
-    volumes:
-      - ./web:/usr/src/app
 
 volumes:
   pgadmin-data:
