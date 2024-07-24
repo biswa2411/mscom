@@ -1,10 +1,12 @@
 import graphene
+from .users.queries import UserQuery
+from .users.mutations import AuthMutation
 
-class SuperQuery(graphene.ObjectType):
-    ABC = graphene.String(default_value="sasasas!")
+class SuperQueries(UserQuery):
+   pass
     
-class SuperMutations(graphene.ObjectType):
-    ABC = graphene.String(default_value="sasasas!") 
+class SuperMutations(AuthMutation):
+   pass
     
 
-schema = graphene.Schema(query=SuperMutations, mutation=SuperMutations)
+schema = graphene.Schema(query=SuperQueries, mutation=SuperMutations)
