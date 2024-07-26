@@ -1,11 +1,10 @@
 import graphene
-from .users.queries import UserQuery
-from .users.mutations import AuthMutation
+from .users.schema import UserMutations, UserQueries
 
-class SuperQueries(UserQuery):
+class SuperQueries(UserQueries):
    pass
     
-class SuperMutations(AuthMutation):
+class SuperMutations(UserMutations):
    pass
     
 

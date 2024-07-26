@@ -1,39 +1,33 @@
-
 import graphene
 from graphene_django import DjangoObjectType
 from graphql_auth import mutations
-from users.models import Address, User, Favorite, CartItem
+from users.models import User, Address, Favorite, CartItem
 from products.models import Product
 
+# Define GraphQL Types
 
+class UserType(DjangoObjectType):
+    class Meta:
+        model = User
+        fields = "__all__"
 
-class AuthMutation(graphene.ObjectType):
-    register = mutations.Register.Field()
-    verify_account = mutations.VerifyAccount.Field()
-    token_auth = mutations.ObtainJSONWebToken.Field()
-    send_password_reset_email = mutations.SendPasswordResetEmail.Field()
-    
-    
 class AddressType(DjangoObjectType):
     class Meta:
         model = Address
         fields = "__all__"
-        
-        
+
 class FavoriteType(DjangoObjectType):
     class Meta:
         model = Favorite
-        fields= '__all__'
-              
+        fields = '__all__'
+
 class CartItemType(DjangoObjectType):
     class Meta:
         model = CartItem
-        fields= "__all__"    
-        
-        
-        
-        
-        
+        fields = "__all__"
+
+# Define Mutations
+
 class UpsertAddress(graphene.Mutation):
     class Arguments:
         id = graphene.ID()
@@ -126,8 +120,6 @@ class DeleteAddress(graphene.Mutation):
             errors.append("Address does not exist.")
             return DeleteAddress(success=False, errors=errors)
 
-
-
 class UpsertCartItem(graphene.Mutation):
     class Arguments:
         id = graphene.ID()
@@ -210,8 +202,6 @@ class DeleteCartItem(graphene.Mutation):
             errors.append("Cart item does not exist.")
             return DeleteCartItem(success=False, errors=errors)
 
-
-
 class UpsertFavorite(graphene.Mutation):
     class Arguments:
         id = graphene.ID()
@@ -291,3 +281,118 @@ class DeleteFavorite(graphene.Mutation):
         except Favorite.DoesNotExist:
             errors.append("Favorite does not exist.")
             return DeleteFavorite(success=False, errors=errors)
+
+# Define Queries
+
+class UserQueryResult(graphene.ObjectType):
+    user = graphene.Field(UserType)
+    status = graphene.Boolean()
+    message = graphene.String()
+
+class UserListQueryResult(graphene.ObjectType):
+    users = graphene.List(UserType)
+    status = graphene.Boolean()
+    message = graphene.String()
+
+class UserQuery(graphene.ObjectType):
+    all_user = graphene.Field(UserListQueryResult)
+    get_user_by_email = graphene.Field(UserListQueryResult, email=graphene.String())
+    user_by_id = graphene.Field(UserQueryResult, id=graphene.ID())
+
+    def resolve_all_user(root, info):
+        users = User.objects.all()
+        return UserListQueryResult(users=users, status=True, message="All users fetched successfully.")
+
+    def resolve_get_user_by_email(root, info, email):
+        users = User.objects.filter(email=email)
+        if users:
+            return UserListQueryResult(users=users, status=True, message="Users with the specified email fetched successfully.")
+        return UserListQueryResult(users=[], status=False, message="No users found with the specified email.")
+
+    def resolve_user_by_id(root, info, id):
+        try:
+            user = User.objects.get(id=id)
+            return UserQueryResult(user=user, status=True, message="User found successfully.")
+        except User.DoesNotExist:
+            return UserQueryResult(user=None, status=False, message="User not found.")
+
+class AddressQuery(graphene.ObjectType):
+    get_all_addresses = graphene.List(AddressType)
+    get_addresses_by_user_id = graphene.List(AddressType, user_id=graphene.ID(required=True))
+    get_address_by_id = graphene.Field(AddressType, id=graphene.ID(required=True))
+
+    def resolve_get_all_addresses(self, info):
+        return Address.objects.all()
+
+    def resolve_get_addresses_by_user_id(self, info, user_id):
+        try:
+            return Address.objects.filter(user__id=user_id)
+        except Address.DoesNotExist:
+            return None
+
+    def resolve_get_address_by_id(self, info, id):
+        try:
+            return Address.objects.get(pk=id)
+        except Address.DoesNotExist:
+            return None
+
+class CartItemQuery(graphene.ObjectType):
+    get_all_cart_items = graphene.List(CartItemType)
+    get_cart_items_by_user_id = graphene.List(CartItemType, user_id=graphene.ID(required=True))
+    get_cart_item_by_id = graphene.Field(CartItemType, id=graphene.ID(required=True))
+
+    def resolve_get_all_cart_items(self, info):
+        return CartItem.objects.all()
+
+    def resolve_get_cart_items_by_user_id(self, info, user_id):
+        try:
+            return CartItem.objects.filter(user__id=user_id)
+        except CartItem.DoesNotExist:
+            return None
+
+    def resolve_get_cart_item_by_id(self, info, id):
+        try:
+            return CartItem.objects.get(pk=id)
+        except CartItem.DoesNotExist:
+            return None
+
+class FavoriteQuery(graphene.ObjectType):
+    get_all_favorites = graphene.List(FavoriteType)
+    get_favorites_by_user_id = graphene.List(FavoriteType, user_id=graphene.ID(required=True))
+    get_favorite_by_id = graphene.Field(FavoriteType, id=graphene.ID(required=True))
+
+    def resolve_get_all_favorites(self, info):
+        return Favorite.objects.all()
+
+    def resolve_get_favorites_by_user_id(self, info, user_id):
+        try:
+            return Favorite.objects.filter(user__id=user_id)
+        except Favorite.DoesNotExist:
+            return None
+
+    def resolve_get_favorite_by_id(self, info, id):
+        try:
+            return Favorite.objects.get(pk=id)
+        except Favorite.DoesNotExist:
+            return None
+
+# Combine Queries and Mutations into a Schema
+
+class AuthMutation(graphene.ObjectType):
+    register = mutations.Register.Field()
+    verify_account = mutations.VerifyAccount.Field()
+    token_auth = mutations.ObtainJSONWebToken.Field()
+    send_password_reset_email = mutations.SendPasswordResetEmail.Field()
+
+class UserMutations(AuthMutation, graphene.ObjectType):
+    upsert_address = UpsertAddress.Field()
+    delete_address = DeleteAddress.Field()
+    upsert_cart_item = UpsertCartItem.Field()
+    delete_cart_item = DeleteCartItem.Field()
+    upsert_favorite = UpsertFavorite.Field()
+    delete_favorite = DeleteFavorite.Field()
+
+class UserQueries(UserQuery, AddressQuery, CartItemQuery, FavoriteQuery, graphene.ObjectType):
+    pass
+
+
