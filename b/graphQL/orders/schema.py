@@ -1,9 +1,10 @@
 import graphene
 from graphene_django import DjangoObjectType
 from orders.models import Order, OrderItem, ShippingInfo
-from users.models import User
 from products.models import Product
 from users.models import Address
+from ..utils.auth import get_authenticated_user
+from graphql import GraphQLError
 
 
 
@@ -24,12 +25,21 @@ class ShippingInfoType(DjangoObjectType):
     class Meta:
         model = ShippingInfo
         fields = "__all__"
+        
+
+        
+
+
+
+
 
 
 # Define Mutations
 
 
 class UpsertOrder(graphene.Mutation):
+    
+    
     class Arguments:
         id = graphene.ID()
         user_id = graphene.ID(required=True)
@@ -42,13 +52,14 @@ class UpsertOrder(graphene.Mutation):
     message = graphene.String()
     errors = graphene.List(graphene.String)
 
-    def mutate(self, info, user_id, address_id, total_amount, status, id=None):
+    def mutate(self, info, address_id, total_amount, status, id=None):
         errors = []
-        try:
-            user = User.objects.get(pk=user_id)
-        except User.DoesNotExist:
-            errors.append("User does not exist.")
-            return UpsertOrder(success=False, errors=errors)
+        auth_result = get_authenticated_user(info)
+        if auth_result["error"]:
+            return UpsertOrder(success=False, message=None, errors=[auth_result["error"]])
+
+        user = auth_result["user"]
+
 
         try:
             address = Address.objects.get(pk=address_id)
@@ -56,25 +67,15 @@ class UpsertOrder(graphene.Mutation):
             errors.append("Address does not exist.")
             return UpsertOrder(success=False, errors=errors)
 
-        if id:
-            try:
-                order = Order.objects.get(pk=id)
-                order.user = user
-                order.address = address
-                order.total_amount = total_amount
-                order.status = status
-                message = "Order updated successfully."
-            except Order.DoesNotExist:
-                errors.append("Order does not exist.")
-                return UpsertOrder(success=False, errors=errors)
-        else:
-            order = Order(
-                user=user,
-                address=address,
-                total_amount=total_amount,
-                status=status
-            )
-            message = "Order created successfully."
+        order, created = Order.objects.get_or_create(
+            pk=id,  # Only attempt to fetch if an id is provided
+            user=user,
+            address=address,
+            total_amount=total_amount,
+            status=status
+        )
+
+        message = "Order created successfully." if created else "Order updated successfully."
 
         try:
             order.full_clean()
@@ -247,30 +248,70 @@ class DeleteShippingInfo(graphene.Mutation):
 
 
 
-
-
-
 # Define Queries
 
 class OrderQuery(graphene.ObjectType):
     get_all_orders = graphene.List(OrderType)
-    get_orders_by_user_id = graphene.List(OrderType, user_id=graphene.ID(required=True))
+    get_orders_by_user_id = graphene.List(OrderType)
     get_order_by_id = graphene.Field(OrderType, id=graphene.ID(required=True))
+    
+    
 
     def resolve_get_all_orders(self, info):
         return Order.objects.all()
 
-    def resolve_get_orders_by_user_id(self, info, user_id):
-        try:
-            return Order.objects.filter(user__id=user_id)
-        except Order.DoesNotExist:
-            return None
 
-    def resolve_get_order_by_id(self, info, id):
+    def resolve_get_orders_by_user_id(self, info):
         try:
-            return Order.objects.get(pk=id)
-        except Order.DoesNotExist:
-            return None
+            # Get the authenticated user
+            user = get_authenticated_user(info)
+            # print(">>>>>>>>>>>>>>>>>",user)
+            if not user:
+                raise GraphQLError("Authentication required")
+
+
+            # Fetch orders associated with the authenticated user
+            orders = Order.objects.filter(user=user)
+            return orders
+        
+        except GraphQLError as e:
+            # GraphQL-specific error
+            # print(f"GraphQLError: {e}")
+            raise e
+
+        except Exception as e:
+            # Log or handle the error as needed
+            # print(f"Error in resolve_get_orders_by_user_id: {e}")
+            raise GraphQLError(e)
+            
+        
+    def resolve_get_order_by_id(self, info, id):
+        
+        try:
+            # Check if the user is authenticated
+            user = get_authenticated_user(info)
+            if not user:
+                raise GraphQLError("Authentication required")
+
+            # Fetch the order by ID
+            order = Order.objects.filter(pk=id).first()
+            if not order:
+                raise GraphQLError("Order not found")
+
+            # Check if the order belongs to the authenticated user
+            if order.user != user:
+                raise GraphQLError("You do not have permission to access this order")
+            return order
+
+        except GraphQLError as e:
+            # GraphQL-specific error
+            # print(f"GraphQLError: {e}")
+            raise e
+
+        except Exception as e:
+            # Handle other exceptions
+            # print(f"Error in resolve_get_order_by_id: {e}")
+            raise GraphQLError("An unexpected error occurred : {e}")
 
 class OrderItemQuery(graphene.ObjectType):
     get_all_order_items = graphene.List(OrderItemType)

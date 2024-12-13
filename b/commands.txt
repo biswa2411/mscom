@@ -1,0 +1,8 @@
+source venv/bin/activate
+pip install django
+django-admin startproject core .
+python manage.py start app users
+pip install graphene-django
+pip install django-graphql-jwt
+pip install django-graphql-auth
+pip freeze > requirements.txt

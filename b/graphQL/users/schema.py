@@ -3,6 +3,10 @@ from graphene_django import DjangoObjectType
 from graphql_auth import mutations
 from users.models import User, Address, Favorite, CartItem
 from products.models import Product
+from django.core.mail import send_mail
+from graphql import GraphQLError
+from django.template.loader import render_to_string
+from ..utils.auth import get_authenticated_user
 
 
 
@@ -281,6 +285,62 @@ class DeleteFavorite(graphene.Mutation):
         except Favorite.DoesNotExist:
             errors.append("Favorite does not exist.")
             return DeleteFavorite(success=False, errors=errors)
+              
+class ContactUs(graphene.Mutation):
+    class Arguments:
+        name = graphene.String(required=True)
+        email = graphene.String(required=True)
+        subject = graphene.String(required=True)
+        message = graphene.String(required=True)
+
+    success = graphene.Boolean()
+    message = graphene.String()
+    errors = graphene.List(graphene.String)
+
+    def mutate(self, info, name, email, subject, message):
+        errors = []
+        auth_result = get_authenticated_user(info)
+        if auth_result["error"]:
+            return ContactUs(success=False, message=None, errors=[auth_result["error"]])
+
+        try:
+            # Validate email format (optional, for additional security)
+            
+            if not email or "@" not in email:
+                errors.append("Invalid email address")
+                ContactUs(success=False, errors=errors)
+
+            # Render the email template with dynamic content
+            email_subject = f"Contact Us: {subject}"
+            email_body = render_to_string(
+                 'contact_us_email.html',  # Path to your template
+                {
+                    'name': name,
+                    'email': email,
+                    'subject': subject,
+                    'message': message
+                }
+            )
+
+            # Send the email (replace 'your_email@example.com' with your actual email)
+            send_mail(
+                subject=email_subject,
+                message='',  # The plain-text version can be left empty if you're sending HTML
+                from_email=email,  # Sender's email address
+                recipient_list=["biswa@yopmail.com"],  # Replace with your email
+                html_message=email_body,  # Send the rendered HTML as the email body
+                fail_silently=False,
+            )
+
+            return ContactUs(success=True, message="Email sent successfully", errors=None)
+
+        except Exception as e:
+            errors.append(str(e))
+            return ContactUs(success=False, message=None, errors=errors)
+
+        except Exception as e:
+            errors.append(str(e))
+            return ContactUs(success=False, message=None, errors=errors)
 
 # Define Queries
 
@@ -380,9 +440,17 @@ class FavoriteQuery(graphene.ObjectType):
 
 class AuthMutation(graphene.ObjectType):
     register = mutations.Register.Field()
-    token_auth = mutations.ObtainJSONWebToken.Field()
+    verify_account = mutations.VerifyAccount.Field()
+    update_account = mutations.UpdateAccount.Field()
+    resend_activation_email = mutations.ResendActivationEmail.Field()
+    send_password_reset_email = mutations.SendPasswordResetEmail.Field()
+    password_reset = mutations.PasswordReset.Field()
+    
+    
+    token_auth = mutations.ObtainJSONWebToken.Field()  #login
     verify_token = mutations.VerifyToken.Field()
     refresh_token = mutations.RefreshToken.Field()
+    revoke_token = mutations.RevokeToken.Field()
 
 
 class UserMutations(AuthMutation, graphene.ObjectType):
@@ -392,6 +460,7 @@ class UserMutations(AuthMutation, graphene.ObjectType):
     delete_cart_item = DeleteCartItem.Field()
     upsert_favorite = UpsertFavorite.Field()
     delete_favorite = DeleteFavorite.Field()
+    contact_us = ContactUs.Field()
 
 class UserQueries(UserQuery, AddressQuery, CartItemQuery, FavoriteQuery, graphene.ObjectType):
     pass
