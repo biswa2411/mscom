@@ -7,7 +7,12 @@ from django.core.mail import send_mail
 from graphql import GraphQLError
 from django.template.loader import render_to_string
 from ..utils.auth import get_authenticated_user
-
+from django.contrib.auth import get_user_model
+from django.contrib.auth.tokens import default_token_generator
+import jwt
+from django.conf import settings
+from datetime import datetime, timedelta
+from django.utils.html import strip_tags
 
 
 class UserType(DjangoObjectType):
@@ -436,10 +441,160 @@ class FavoriteQuery(graphene.ObjectType):
         except Favorite.DoesNotExist:
             return None
 
-# Combine Queries and Mutations into a Schema
 
+
+
+
+# Function to generate the verification token using django-graphql-jwt
+def generate_verification_token(user):
+    payload = {
+        "user_id": user.id,
+        "exp": datetime.utcnow() + timedelta(hours=24),  # Token valid for 24 hours
+        "type": "email_verification",
+    }
+    token = jwt.encode(payload, settings.SECRET_KEY, algorithm="HS256")
+    return token
+
+class CustomRegister(mutations.Register):
+    # Arguments for the mutation
+    class Arguments:
+        email = graphene.String(required=True)
+        username = graphene.String(required=True)
+        password1 = graphene.String(required=True)
+        password2 = graphene.String(required=True)
+        mobile = graphene.String(required=True)
+        first_name = graphene.String(required=True)
+        last_name=graphene.String(required=True)
+        role = graphene.String()
+        
+   
+    success = graphene.Boolean()
+    message = graphene.String()
+    errors = graphene.List(graphene.String)
+    
+
+    def mutate(self, info, email, username, password1, password2, mobile, first_name, last_name, role=None):
+        try:
+           
+            # Validate that the passwords match
+            if password1 != password2:
+                raise Exception("Password1 and Password2 must match")
+            
+            # Validate mobile number length
+            if len(mobile) < 10 or len(mobile) > 15:
+                raise Exception("Mobile number must be between 10 and 15 digits")
+
+            User = get_user_model()
+            if User.objects.filter(mobile_no=mobile).exists():
+                raise Exception("Mobile number already exists")
+            
+            if User.objects.filter(email=email).exists():
+                raise Exception("Email already exists! please singin or provide a new email")
+           
+            if User.objects.filter(username=username).exists():
+                raise Exception("Username already exists")
+            
+            # Assign a default role if none is provided
+            if not role:
+                role = "user"
+
+            # Optionally validate role (if predefined roles are needed)
+            valid_roles = ["admin", "user", "editor"]
+            if role not in valid_roles:
+                raise Exception(f"Invalid role. Choose from: {', '.join(valid_roles)}")
+
+            # Create the user without using the super() mutate call
+            user = User.objects.create_user(
+                email=email,
+                username=username,
+                first_name=first_name,
+                last_name=last_name,
+                password=password1,
+                mobile_no = mobile,
+                role = role,
+                is_active = False 
+            )
+
+           
+           
+            
+             # Send verification email
+            token = generate_verification_token(user)
+            verification_link = f"http://localhost:8000/activate/{token}/"
+            subject = "Verify Your Email Address"
+            message = render_to_string('email_verification.html', {
+                'user': user,
+                'verification_link': verification_link,
+            })
+            plain_message = strip_tags(message)
+            send_mail(
+                subject=subject,
+                message=plain_message,  # Plain text version
+                from_email='no-reply@yourdomain.com',
+                recipient_list=[email],
+                html_message=message,  # HTML version
+                fail_silently=False,
+            )
+
+
+            return CustomRegister(
+                success=True,
+                message=f"User registered successfully!. A verification mail is sent to {email} "
+            )
+
+        except Exception as e:
+            # Return an error response if an exception occurs
+            
+            return CustomRegister(
+                success=False,
+                message=str(e)
+            )
+
+    
+class VerifyAccount(graphene.Mutation):
+    class Arguments:
+        token = graphene.String(required=True)
+
+    success = graphene.Boolean()
+    message = graphene.String()
+
+    def mutate(self, info, token):
+        try:
+            # Decode the JWT token
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
+
+            if payload["type"] != "email_verification":
+                raise Exception("Invalid token type.")
+
+            # Get the user by ID
+            user_id = payload["user_id"]
+            User = get_user_model()
+            user = User.objects.get(pk=user_id)
+
+            if user.is_active:
+                return VerifyAccount(
+                    success=False, message="Account is already verified."
+                )
+
+            # Activate the user's account
+            user.is_active = True
+            user.save()
+
+            return VerifyAccount(
+                success=True, message="Email verified successfully!"
+            )
+
+        except jwt.ExpiredSignatureError:
+            return VerifyAccount(success=False, message="The token has expired.")
+        except jwt.InvalidTokenError:
+            return VerifyAccount(success=False, message="Invalid token.")
+        except Exception as e:
+            return VerifyAccount(success=False, message=str(e))
+            
+            
+            
 class AuthMutation(graphene.ObjectType):
-    register = mutations.Register.Field()
+    register =CustomRegister.Field()
     verify_account = mutations.VerifyAccount.Field()
     update_account = mutations.UpdateAccount.Field()
     resend_activation_email = mutations.ResendActivationEmail.Field()

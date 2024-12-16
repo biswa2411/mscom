@@ -10,9 +10,12 @@ SECRET_KEY = 'django-insecure-fhobh&)^2i7x+a0g!in9f0%(3hh9_cw+4!9j*yp9v+jhz4yxu6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
-
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # client-side URL
+    
+]
 # Application definition
 
 INSTALLED_APPS = [
@@ -36,7 +39,8 @@ INSTALLED_APPS = [
     'graphene_django',
     'graphql_jwt.refresh_token.apps.RefreshTokenConfig',
     'graphql_auth',
-    'django_filters'
+    'django_filters',
+     'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -47,7 +51,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    "django.contrib.auth.middleware.AuthenticationMiddleware"
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'
