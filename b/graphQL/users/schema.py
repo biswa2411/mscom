@@ -4,7 +4,6 @@ from graphql_auth import mutations
 from users.models import User, Address, Favorite, CartItem
 from products.models import Product
 from django.core.mail import send_mail
-from graphql import GraphQLError
 from django.template.loader import render_to_string
 from ..utils.auth import get_authenticated_user
 from django.contrib.auth import get_user_model
@@ -13,6 +12,7 @@ import jwt
 from django.conf import settings
 from datetime import datetime, timedelta
 from django.utils.html import strip_tags
+from graphql_auth.models import UserStatus
 
 
 class UserType(DjangoObjectType):
@@ -343,9 +343,6 @@ class ContactUs(graphene.Mutation):
             errors.append(str(e))
             return ContactUs(success=False, message=None, errors=errors)
 
-        except Exception as e:
-            errors.append(str(e))
-            return ContactUs(success=False, message=None, errors=errors)
 
 # Define Queries
 
@@ -520,7 +517,7 @@ class CustomRegister(mutations.Register):
             
              # Send verification email
             token = generate_verification_token(user)
-            verification_link = f"http://localhost:8000/activate/{token}/"
+            verification_link = f"http://localhost:3000/auth/verify?t={token}"
             subject = "Verify Your Email Address"
             message = render_to_string('email_verification.html', {
                 'user': user,
@@ -572,13 +569,20 @@ class VerifyAccount(graphene.Mutation):
             user = User.objects.get(pk=user_id)
 
             if user.is_active:
-                return VerifyAccount(
-                    success=False, message="Account is already verified."
-                )
+                user_status = UserStatus.objects.get(user=user)
+                if user_status.verified:
+                    return VerifyAccount(
+                        success=False, message="Account is already verified."
+                    )
 
             # Activate the user's account
             user.is_active = True
             user.save()
+            
+            user_status = user.status  # django-graphql-auth automatically links this
+            if user_status:
+                user_status.verified = True
+                user_status.save()
 
             return VerifyAccount(
                 success=True, message="Email verified successfully!"
@@ -591,16 +595,59 @@ class VerifyAccount(graphene.Mutation):
         except Exception as e:
             return VerifyAccount(success=False, message=str(e))
             
+class ResendActivationEmail(graphene.Mutation):
+    class Arguments:
+        email = graphene.String(required=True)
+
+    success = graphene.Boolean()
+    message = graphene.String()
+
+    def mutate(self, info, email):
+        try:
+            User = get_user_model()
+            user = User.objects.filter(email=email).first()
             
+            if not user:
+                return ResendActivationEmail(success=False, message="User does not exist.")
+
+            if user.is_active:
+                return ResendActivationEmail(success=False, message="Account is already active.")
+            
+            token = generate_verification_token(user)
+            verification_link = f"http://localhost:3000/auth/verify?t={token}"
+            subject = "Verify Your Email Address"
+            message = render_to_string('email_verification.html', {
+                'user': user,
+                'verification_link': verification_link,
+            })
+            plain_message = strip_tags(message)
+            send_mail(
+                subject=subject,
+                message=plain_message,  # Plain text version
+                from_email='no-reply@yourdomain.com',
+                recipient_list=[email],
+                html_message=message,  # HTML version
+                fail_silently=False,
+            )
+            
+            return ResendActivationEmail(success=True, message="Activation email sent successfully.")
+        except Exception as e:
+            return ResendActivationEmail(success=False, message=str(e))
+        
             
 class AuthMutation(graphene.ObjectType):
     register =CustomRegister.Field()
-    verify_account = mutations.VerifyAccount.Field()
+    
+    verify_account = VerifyAccount.Field()
+    resend_activation_email = ResendActivationEmail.Field()
+    
     update_account = mutations.UpdateAccount.Field()
-    resend_activation_email = mutations.ResendActivationEmail.Field()
+    
+    password_change = mutations.PasswordChange.Field()
     send_password_reset_email = mutations.SendPasswordResetEmail.Field()
     password_reset = mutations.PasswordReset.Field()
     
+    delete_account = mutations.DeleteAccount.Field()
     
     token_auth = mutations.ObtainJSONWebToken.Field()  #login
     verify_token = mutations.VerifyToken.Field()

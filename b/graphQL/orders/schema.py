@@ -258,20 +258,36 @@ class OrderQuery(graphene.ObjectType):
     
 
     def resolve_get_all_orders(self, info):
-        return Order.objects.all()
+        try:
+            user = get_authenticated_user(info)
+            if not user:
+                    raise GraphQLError("Authentication required")
+            
+            return Order.objects.all()
+        except GraphQLError as e:
+            # GraphQL-specific error
+            print(f"GraphQLError: {e}")
+            raise e
+
+        except Exception as e:
+            raise GraphQLError(e)
+
 
 
     def resolve_get_orders_by_user_id(self, info):
         try:
             # Get the authenticated user
-            user = get_authenticated_user(info)
-            # print(">>>>>>>>>>>>>>>>>",user)
+            user_data = get_authenticated_user(info)
+            user= user_data["user"]
+            error = user_data["error"]
+
             if not user:
-                raise GraphQLError("Authentication required")
+                raise GraphQLError(error)
 
 
             # Fetch orders associated with the authenticated user
-            orders = Order.objects.filter(user=user)
+            orders = Order.objects.filter(user=user.id)
+
             return orders
         
         except GraphQLError as e:

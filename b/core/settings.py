@@ -1,6 +1,7 @@
 
 
 from pathlib import Path
+from datetime import timedelta
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -156,6 +157,8 @@ GRAPHQL_JWT = {
     'JWT_VERIFY_EXPIRATION': True,
     'JWT_LONG_RUNNING_REFRESH_TOKEN': True,
     "JWT_AUTH_HEADER_PREFIX": "Bearer",
+    "JWT_EXPIRATION_DELTA": timedelta(days=3),  # Access token expires in 3 days
+    "JWT_REFRESH_EXPIRATION_DELTA": timedelta(days=10),  # Refresh token expires in 10 days
     "JWT_ALLOW_ANY_CLASSES": [
         "graphql_auth.mutations.Register",
         "graphql_auth.mutations.VerifyAccount",
