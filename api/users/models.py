@@ -3,10 +3,22 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from products.models import Product
+from django.core.validators import RegexValidator
 
 
 class User(AbstractUser):
-    role = models.CharField(max_length=100)  # Example field for user role
+    role = models.CharField(max_length=100, blank=True, null=True ) 
+    mobile_no = models.CharField(
+        max_length=15,
+        unique=True,
+        validators=[
+            RegexValidator(
+                regex=r'^\+?\d{10,15}$',
+                message="Enter a valid mobile number. It must include 10-15 digits, optionally starting with '+'."
+            )
+        ]
+    )
+
 
     def __str__(self):
         return self.username
