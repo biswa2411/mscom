@@ -2,9 +2,10 @@
 
 from pathlib import Path
 from datetime import timedelta
-import django
 import os
+
 BASE_DIR = Path(__file__).resolve().parent.parent
+
 SECRET_KEY = 'django-insecure-_uh8)lz-q(8w&o_y=7@i310sp9-y@dv=(9pwkb@4&hq@w^ba=5'
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -60,7 +61,7 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [ BASE_DIR / 'graphQL/templates',],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
