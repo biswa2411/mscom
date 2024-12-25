@@ -11,13 +11,12 @@ SECRET_KEY = 'django-insecure-_uh8)lz-q(8w&o_y=7@i310sp9-y@dv=(9pwkb@4&hq@w^ba=5
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["*"]
+
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # client-side URL
     
 ]
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -27,7 +26,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # local_apps
+    
+    #Local apps
     'users',
     "products",
     "reviews",
@@ -36,11 +36,11 @@ INSTALLED_APPS = [
     'promotion',
     'graphQL',
     
-    # installed_apps
-    "graphene_django",
-    'graphql_auth',
+    #Installed apps
+    'graphene_django',
     'graphql_jwt.refresh_token.apps.RefreshTokenConfig',
-    'django_filters',    
+    'graphql_auth',
+    'django_filters',
      'corsheaders',
 ]
 
@@ -98,16 +98,6 @@ DATABASES = {
 # }
 
 
-
-GRAPHENE = {
-    "SCHEMA": "graphQL.schema.schema",
-    "MIDDLEWARE": [
-        "graphql_jwt.middleware.JSONWebTokenMiddleware",
-    ],
-}
-
-
-
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
@@ -149,13 +139,29 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = 'users.User'
 
 AUTHENTICATION_BACKENDS = [
     "graphql_auth.backends.GraphQLAuthBackend",
     "django.contrib.auth.backends.ModelBackend",
 ]
 
+GRAPHENE = {
+    "SCHEMA": "graphQL.schema.schema",
+    "MIDDLEWARE": [
+        "graphql_jwt.middleware.JSONWebTokenMiddleware",
+    ],
+}
+
+AUTH_USER_MODEL = 'users.User'
+
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
+EMAIL_PORT = os.environ.get('EMAIL_PORT')
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+EMAIL_HOST_USER =os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD =os.environ.get('EMAIL_HOST_PASSWORD')
 
 GRAPHQL_JWT = {
     'JWT_VERIFY_EXPIRATION': True,
@@ -175,13 +181,3 @@ GRAPHQL_JWT = {
         "graphql_auth.mutations.RevokeToken",
     ],
 }
-
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = os.environ.get('EMAIL_HOST')
-EMAIL_PORT = os.environ.get('EMAIL_PORT')
-EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False
-EMAIL_HOST_USER =os.environ.get('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD =os.environ.get('EMAIL_HOST_PASSWORD')
