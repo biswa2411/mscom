@@ -42,7 +42,6 @@ class UpsertOrder(graphene.Mutation):
     
     class Arguments:
         id = graphene.ID()
-        user_id = graphene.ID(required=True)
         address_id = graphene.ID(required=True)
         total_amount = graphene.Decimal(required=True)
         status = graphene.String(required=True)
@@ -96,6 +95,9 @@ class DeleteOrder(graphene.Mutation):
 
     def mutate(self, info, id):
         errors = []
+        auth_result = get_authenticated_user(info)
+        if auth_result["error"]:
+            return DeleteOrder(success=False, message=None, errors=[auth_result["error"]])
         try:
             order = Order.objects.get(pk=id)
             order.delete()

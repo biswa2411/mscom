@@ -128,61 +128,61 @@ class DeleteAddress(graphene.Mutation):
             errors.append("Address does not exist.")
             return DeleteAddress(success=False, errors=errors)
 
-class UpsertCartItem(graphene.Mutation):
-    class Arguments:
-        id = graphene.ID()
-        user_id = graphene.ID(required=True)
-        product_id = graphene.ID(required=True)
-        quantity = graphene.Int(required=True)
+# class UpsertCartItem(graphene.Mutation):
+#     class Arguments:
+#         id = graphene.ID()
+#         user_id = graphene.ID(required=True)
+#         product_id = graphene.ID(required=True)
+#         quantity = graphene.Int(required=True)
 
-    cart_item = graphene.Field(CartItemType)
-    success = graphene.Boolean()
-    message = graphene.String()
-    errors = graphene.List(graphene.String)
+#     cart_item = graphene.Field(CartItemType)
+#     success = graphene.Boolean()
+#     message = graphene.String()
+#     errors = graphene.List(graphene.String)
 
-    def mutate(self, info, user_id, product_id, quantity, id=None):
-        errors = []
-        try:
-            user = User.objects.get(pk=user_id)
-        except User.DoesNotExist:
-            errors.append("User does not exist.")
-            return UpsertCartItem(success=False, errors=errors)
+#     def mutate(self, info, user_id, product_id, quantity, id=None):
+#         errors = []
+#         try:
+#             user = User.objects.get(pk=user_id)
+#         except User.DoesNotExist:
+#             errors.append("User does not exist.")
+#             return UpsertCartItem(success=False, errors=errors)
 
-        try:
-            product = Product.objects.get(pk=product_id)
-        except Product.DoesNotExist:
-            errors.append("Product does not exist.")
-            return UpsertCartItem(success=False, errors=errors)
+#         try:
+#             product = Product.objects.get(pk=product_id)
+#         except Product.DoesNotExist:
+#             errors.append("Product does not exist.")
+#             return UpsertCartItem(success=False, errors=errors)
 
-        if id:
-            try:
-                cart_item = CartItem.objects.get(pk=id)
-                if cart_item.user != user:
-                    raise Exception("You do not have permission to update this cart item.")
-            except CartItem.DoesNotExist:
-                errors.append("Cart item does not exist.")
-                return UpsertCartItem(success=False, errors=errors)
-            except Exception as e:
-                errors.append(str(e))
-                return UpsertCartItem(success=False, errors=errors)
+#         if id:
+#             try:
+#                 cart_item = CartItem.objects.get(pk=id)
+#                 if cart_item.user != user:
+#                     raise Exception("You do not have permission to update this cart item.")
+#             except CartItem.DoesNotExist:
+#                 errors.append("Cart item does not exist.")
+#                 return UpsertCartItem(success=False, errors=errors)
+#             except Exception as e:
+#                 errors.append(str(e))
+#                 return UpsertCartItem(success=False, errors=errors)
 
-            cart_item.product = product
-            cart_item.quantity = quantity
-            message = "Cart item updated successfully."
-        else:
-            cart_item = CartItem(user=user, product=product, quantity=quantity)
-            message = "Cart item created successfully."
+#             cart_item.product = product
+#             cart_item.quantity = quantity
+#             message = "Cart item updated successfully."
+#         else:
+#             cart_item = CartItem(user=user, product=product, quantity=quantity)
+#             message = "Cart item created successfully."
 
-        try:
-            cart_item.full_clean()
-            cart_item.save()
-        except Exception as e:
-            errors.extend(e.messages)
-            return UpsertCartItem(success=False, errors=errors)
+#         try:
+#             cart_item.full_clean()
+#             cart_item.save()
+#         except Exception as e:
+#             errors.extend(e.messages)
+#             return UpsertCartItem(success=False, errors=errors)
 
-        return UpsertCartItem(cart_item=cart_item, success=True, message=message, errors=None)
+#         return UpsertCartItem(cart_item=cart_item, success=True, message=message, errors=None)
 
-class DeleteCartItem(graphene.Mutation):
+# class DeleteCartItem(graphene.Mutation):
     class Arguments:
         id = graphene.ID(required=True)
         user_id = graphene.ID(required=True)
@@ -657,8 +657,8 @@ class AuthMutation(graphene.ObjectType):
 class UserMutations(AuthMutation, graphene.ObjectType):
     upsert_address = UpsertAddress.Field()
     delete_address = DeleteAddress.Field()
-    upsert_cart_item = UpsertCartItem.Field()
-    delete_cart_item = DeleteCartItem.Field()
+    # upsert_cart_item = UpsertCartItem.Field()
+    # delete_cart_item = DeleteCartItem.Field()
     upsert_favorite = UpsertFavorite.Field()
     delete_favorite = DeleteFavorite.Field()
     contact_us = ContactUs.Field()
